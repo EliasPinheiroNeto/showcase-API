@@ -1,21 +1,13 @@
-import express from 'express';
-import { Express } from 'express'
+import App from "./app/app";
+import ProductController from "./app/controllers/productController";
 import dotenv from "dotenv";
-
-// App imports
 import connectDB from './database/connection';
-import productsRouter from './app/routes/product';
 
 dotenv.config()
 connectDB()
 
-const app: Express = express()
-app.use(express.json())
+const app = new App([
+    new ProductController()
+], process.env.DEV_PORT)
 
-// Routes
-app.use(productsRouter)
-
-// App launch
-app.listen(process.env.DEV_PORT, () => {
-    console.log(`Server running on ${process.env.DEV_PORT}`)
-})
+app.listen()

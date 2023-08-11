@@ -13,47 +13,69 @@ class ProductController implements IController {
         this.router.get('/products', this.getProducts)
         this.router.get('/product/:id', this.getProductById)
         this.router.post('/product', this.createProduct)
+        this.router.delete('/product', this.deleteProductById)
     }
 
     async createProduct(req: Request, res: Response) {
         const body = req.body
 
-        const product = new Product(body)
+        try {
+            const product = new Product(body)
 
-        await product.save()
-        res.send(product)
+            await product.save()
+            res.send(product)
+        } catch (err) {
+            console.log(err)
+            res.send({ err })
+        }
     }
 
     async getProducts(req: Request, res: Response) {
-        const products = await Product.find()
+        try {
+            const products = await Product.find()
 
-        res.send(products)
+            res.send(products)
+        } catch (err) {
+            console.log(err)
+            res.send({ err })
+        }
     }
 
     async getProductById(req: Request, res: Response) {
         const id = req.params.id
-        const product = await Product.findById(id)
 
-        res.send(product)
+        try {
+            const product = await Product.findById(id)
+
+            if (!product) {
+                return res.status(400).send({ error: "Product not found" })
+            }
+
+            res.send(product)
+
+        } catch (err) {
+            console.log(err)
+            res.send({ err })
+        }
+    }
+
+    async deleteProductById(req: Request, res: Response) {
+        const id: string = req.body.id
+        console.log("aqui")
+
+        try {
+            const del = await Product.deleteOne({ _id: id })
+
+            if (del.deletedCount >= 1) {
+                return res.send({ response: "Product deleted" })
+            }
+
+            res.send({ response: "no product deleted" })
+        } catch (err) {
+            console.log(err)
+            res.send({ err })
+        }
     }
 }
-
-
-// export default {
-//     async createProduct(req: Request, res: Response) {
-//         const body = req.body
-
-//         const product = new Product(body)
-
-//         await product.save()
-//         res.send(product)
-//     },
-
-//     async getProducts(req: Request, res: Response) {
-//         const products = await Product.find()
-
-//         res.send(products)
-//     }
-// }
 
 export default ProductController

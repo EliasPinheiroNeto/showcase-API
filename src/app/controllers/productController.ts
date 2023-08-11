@@ -11,7 +11,7 @@ class ProductController implements IController {
 
     public initializeRoutes() {
         this.router.get('/products', this.getProducts)
-        this.router.get('/product/:id')
+        this.router.get('/product/:id', this.getProductById)
         this.router.post('/product', this.createProduct)
     }
 

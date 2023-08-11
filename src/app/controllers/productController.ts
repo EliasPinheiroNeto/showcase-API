@@ -1,6 +1,7 @@
 import { Router, Request, Response } from 'express'
 import Product from '../../database/models/Product'
 import IController from './IController';
+import authorize from '../middlewares/authorize';
 
 class ProductController implements IController {
     public router: Router = Router()
@@ -12,8 +13,8 @@ class ProductController implements IController {
     public initializeRoutes() {
         this.router.get('/products', this.getProducts)
         this.router.get('/product/:id', this.getProductById)
-        this.router.post('/product', this.createProduct)
-        this.router.delete('/product', this.deleteProductById)
+        this.router.post('/product', authorize, this.createProduct)
+        this.router.delete('/product', authorize, this.deleteProductById)
     }
 
     async createProduct(req: Request, res: Response) {
@@ -61,7 +62,6 @@ class ProductController implements IController {
 
     async deleteProductById(req: Request, res: Response) {
         const id: string = req.body.id
-        console.log("aqui")
 
         try {
             const del = await Product.deleteOne({ _id: id })

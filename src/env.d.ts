@@ -6,6 +6,8 @@ declare global {
 
             ADM_USER: string
             ADM_PASSWORD: string
+
+            SECRET: string
         }
     }
 }

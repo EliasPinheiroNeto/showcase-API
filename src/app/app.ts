@@ -1,5 +1,6 @@
 import express from 'express';
 import { Express } from 'express'
+import { connect } from 'mongoose'
 import IController from './controllers/IController';
 
 class App {
@@ -10,6 +11,7 @@ class App {
         this.app = express()
         this.port = port
 
+        this.connectDatabase()
         this.initializeMiddlewares()
         this.initializeControllers(controllers)
     }
@@ -22,6 +24,10 @@ class App {
         controllers.forEach((controller: IController) => {
             this.app.use('/', controller.router)
         })
+    }
+
+    private connectDatabase() {
+        connect(`mongodb://127.0.0.1:27017/${process.env.DB_NAME}`)
     }
 
     public listen() {

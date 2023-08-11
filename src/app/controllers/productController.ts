@@ -1,5 +1,5 @@
 import { Router, Request, Response } from 'express'
-import { Product } from "../../database/models/Product";
+import Product from '../../database/models/Product'
 import IController from './IController';
 
 class ProductController implements IController {
@@ -11,6 +11,7 @@ class ProductController implements IController {
 
     public initializeRoutes() {
         this.router.get('/products', this.getProducts)
+        this.router.get('/product/:id')
         this.router.post('/product', this.createProduct)
     }
 
@@ -27,6 +28,13 @@ class ProductController implements IController {
         const products = await Product.find()
 
         res.send(products)
+    }
+
+    async getProductById(req: Request, res: Response) {
+        const id = req.params.id
+        const product = await Product.findById(id)
+
+        res.send(product)
     }
 }
 

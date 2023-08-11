@@ -1,5 +1,4 @@
 import "dotenv/config";
-import './database/connection';
 import App from "./app/app";
 import ProductController from "./app/controllers/productController";
 

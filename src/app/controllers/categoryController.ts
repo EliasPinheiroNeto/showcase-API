@@ -2,6 +2,7 @@ import { Request, Response, Router } from 'express'
 import IController from './IController'
 import Category from '../../database/models/Category'
 import authorize from '../middlewares/authorize'
+import { Document } from 'mongoose'
 
 class CategoryController implements IController {
     public router: Router = Router()

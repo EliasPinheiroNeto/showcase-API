@@ -1,14 +1,10 @@
-import { Model, model, Schema, Document } from "mongoose";
+import { model, Schema, InferSchemaType } from "mongoose";
 
-export interface ICategory {
-    name: string
-}
-
-export type CategoryModel = Model<ICategory>
-
-const categorySchema = new Schema<ICategory, CategoryModel>({
+const categorySchema = new Schema({
     name: { type: String, required: true }
 })
 
-const Category = model<ICategory, CategoryModel>("Category", categorySchema)
+type CategoryType = InferSchemaType<typeof categorySchema>
+
+const Category = model<CategoryType>("Category", categorySchema)
 export default Category

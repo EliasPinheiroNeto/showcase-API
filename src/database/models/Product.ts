@@ -1,16 +1,6 @@
-import { Schema, model, Document, Model, Types } from 'mongoose'
-import { ICategory } from './Category'
+import { Schema, model, Document, Model, Types, InferSchemaType } from 'mongoose'
 
-export interface IProduct {
-    name: string
-    price: number
-    pictures: Types.Array<string>
-    category: { ref: 'Category', type: Types.ObjectId }
-}
-
-export type ProductModel = Model<IProduct>
-
-const productSchema = new Schema<IProduct, ProductModel>({
+const productSchema = new Schema({
     name: {
         type: String,
         required: true
@@ -29,5 +19,7 @@ const productSchema = new Schema<IProduct, ProductModel>({
     }
 })
 
-const Product = model<IProduct, ProductModel>('Product', productSchema)
+type ProductType = InferSchemaType<typeof productSchema>
+
+const Product = model<ProductType>('Product', productSchema)
 export default Product

@@ -1,11 +1,16 @@
-import { Schema, model, Document, Model } from 'mongoose'
+import { Schema, model, Document, Model, Types } from 'mongoose'
+import { ICategory } from './Category'
 
-export interface IProduct extends Document {
+export interface IProduct {
     name: string
     price: number
+    pictures: Types.Array<string>
+    category: { ref: 'Category', type: Types.ObjectId }
 }
 
-const productSchema: Schema<IProduct> = new Schema<IProduct>({
+export type ProductModel = Model<IProduct>
+
+const productSchema = new Schema<IProduct, ProductModel>({
     name: {
         type: String,
         required: true
@@ -13,8 +18,16 @@ const productSchema: Schema<IProduct> = new Schema<IProduct>({
     price: {
         type: Number,
         required: true
+    },
+    pictures: {
+        type: [String]
+    },
+    category: {
+        ref: 'Category',
+        type: Types.ObjectId,
+        required: true
     }
 })
 
-const Product: Model<IProduct> = model<IProduct>('Product', productSchema)
+const Product = model<IProduct, ProductModel>('Product', productSchema)
 export default Product

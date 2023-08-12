@@ -1,5 +1,5 @@
 import multer from 'multer'
-import { basename, dirname, relative } from 'path'
+import { extension } from 'mime'
 import { existsSync, mkdirSync } from 'fs'
 
 class Upload {
@@ -23,7 +23,9 @@ class Upload {
             },
 
             filename: (req, file, cb) => {
-                const name = `${new Date().getTime()}.${file.originalname.toLowerCase().normalize('NFD').replace(/\p{Mn}/gu, "")}`
+
+                const type = extension(file.mimetype)
+                const name = `${new Date().getTime()}.${type}`
 
                 cb(null, name)
             }

@@ -5,6 +5,7 @@ import authorize from '../middlewares/authorize'
 import Product from '../../database/models/Product'
 import { resolve } from 'path'
 import { existsSync, unlinkSync } from 'fs'
+import { isValidObjectId } from 'mongoose'
 
 class CategoryController implements IController {
     public router: Router = Router()
@@ -16,6 +17,7 @@ class CategoryController implements IController {
     public initializeRoutes() {
         this.router.get('/categories', this.getCategories)
         this.router.post('/category', authorize, this.createCategory)
+        this.router.patch('/category', authorize, this.updateCategory)
         this.router.delete('/category', authorize, this.deleteCategoryById)
     }
 
@@ -26,6 +28,26 @@ class CategoryController implements IController {
             const category = new Category(body)
 
             await category.save()
+            res.send(category)
+        } catch (err) {
+            console.log(err)
+            res.status(400).send({ err })
+        }
+    }
+
+    async updateCategory(req: Request, res: Response) {
+        const body = req.body
+
+        try {
+            if (!isValidObjectId(body.id)) {
+                return res.status(400).send({ error: `ID recived is not valid` })
+            }
+
+            const category = await Category.findByIdAndUpdate(body.id, body, { new: true })
+            if (!category) {
+                res.status(404).send({ error: "Category not found" })
+            }
+
             res.send(category)
         } catch (err) {
             console.log(err)

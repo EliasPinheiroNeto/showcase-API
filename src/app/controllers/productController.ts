@@ -2,7 +2,7 @@ import { Router, Request, Response } from 'express'
 import Product from '../../database/models/Product'
 import IController from './IController';
 import authorize from '../middlewares/authorize';
-import { Error } from 'mongoose';
+import { Error, isValidObjectId } from 'mongoose';
 import { resolve } from 'path';
 import { existsSync, unlinkSync } from 'fs';
 
@@ -18,6 +18,7 @@ class ProductController implements IController {
         this.router.get('/products/:categoryId', this.getProductsByCategory)
         this.router.get('/product/:id', this.getProductById)
         this.router.post('/product', authorize, this.createProduct)
+        this.router.patch('/product', authorize, this.updateProduct)
         this.router.delete('/product', authorize, this.deleteProductById)
     }
 
@@ -47,6 +48,26 @@ class ProductController implements IController {
         }
     }
 
+    async updateProduct(req: Request, res: Response) {
+        const body = req.body
+
+        try {
+            if (!isValidObjectId(body.id)) {
+                return res.status(400).send({ error: `ID recived is not valid` })
+            }
+
+            const product = await Product.findByIdAndUpdate(body.id, body, { new: true, })
+            if (!product) {
+                return res.status(404).send({ err: `Product not found` })
+            }
+
+            res.send(product)
+        } catch (err) {
+            console.log(err)
+            res.status(400).send({ err })
+        }
+    }
+
     async getProducts(req: Request, res: Response) {
         try {
             const products = await Product.find().populate('category')
@@ -54,7 +75,7 @@ class ProductController implements IController {
             res.send(products)
         } catch (err) {
             console.log(err)
-            res.send({ err })
+            res.status(400).send({ err })
         }
     }
 
@@ -77,11 +98,10 @@ class ProductController implements IController {
             const product = await Product.findById(id).populate('category')
 
             if (!product) {
-                return res.status(400).send({ error: "Product not found" })
+                return res.status(404).send({ error: "Product not found" })
             }
 
             res.send(product)
-
         } catch (err) {
             console.log(err)
             res.send({ err })
@@ -93,13 +113,13 @@ class ProductController implements IController {
 
         try {
             const product = await Product.findById(id)
+            if (!product) {
+                return res.status(400).send({ error: "Product not found" })
+            }
+
             const response: { status: string, imagesResults: string[] } = {
                 status: '',
                 imagesResults: []
-            }
-
-            if (!product) {
-                return res.status(400).send({ error: "Product not found" })
             }
 
             if (product.pictures.length >= 1) {
@@ -119,7 +139,7 @@ class ProductController implements IController {
             return res.send(response)
         } catch (err) {
             console.log(err)
-            res.send({ err })
+            res.status(400).send({ err })
         }
     }
 }

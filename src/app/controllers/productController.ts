@@ -3,6 +3,8 @@ import Product from '../../database/models/Product'
 import IController from './IController';
 import authorize from '../middlewares/authorize';
 import { Error } from 'mongoose';
+import { resolve } from 'path';
+import { existsSync, unlinkSync } from 'fs';
 
 class ProductController implements IController {
     public router: Router = Router()
@@ -77,13 +79,31 @@ class ProductController implements IController {
         const id: string = req.body.id
 
         try {
-            const del = await Product.deleteOne({ _id: id })
-
-            if (del.deletedCount >= 1) {
-                return res.send({ response: "Product deleted" })
+            const product = await Product.findById(id)
+            const response: { status: string, imagesResults: string[] } = {
+                status: '',
+                imagesResults: []
             }
 
-            res.send({ response: "no product deleted" })
+            if (!product) {
+                return res.status(400).send({ error: "Product not found" })
+            }
+
+            if (product.pictures.length >= 1) {
+                const uploadPath: string = resolve('./src/database/uploads')
+
+                product.pictures.forEach((pic: string) => {
+                    if (existsSync(`${uploadPath}/${pic}`)) {
+                        return unlinkSync(`${uploadPath}/${pic}`)
+                    }
+
+                    response.imagesResults.push(`Image ${pic} not found`)
+                })
+            }
+
+            await Product.deleteOne({ _id: id })
+            response.status = 'Product deleted'
+            return res.send(response)
         } catch (err) {
             console.log(err)
             res.send({ err })

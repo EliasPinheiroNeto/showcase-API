@@ -58,7 +58,7 @@ class PicturesController implements IController {
 
     deleteManyImagesByName(req: Request, res: Response) {
         const names: string[] = req.body.names
-        const uploadPath = resolve('./src/database/uploads')
+        const uploadPath: string = resolve('./src/database/uploads')
 
         try {
             const responseMensages: string[] = []

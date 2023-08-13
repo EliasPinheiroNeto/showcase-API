@@ -10,12 +10,16 @@ const productSchema = new Schema({
         required: true
     },
     pictures: {
-        type: [String]
+        type: [String],
+        default: () => {
+            const arr: string[] = []
+            return arr
+        }
     },
     category: {
         ref: 'Category',
         type: Types.ObjectId,
-        required: true
+        required: true,
     }
 })
 

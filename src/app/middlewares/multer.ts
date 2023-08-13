@@ -1,5 +1,5 @@
 import multer from 'multer'
-import { extension } from 'mime'
+import mime from 'mime'
 import { existsSync, mkdirSync } from 'fs'
 
 class Upload {
@@ -24,7 +24,7 @@ class Upload {
 
             filename: (req, file, cb) => {
 
-                const type = extension(file.mimetype)
+                const type = mime.getExtension(file.mimetype)
                 const name = `${new Date().getTime()}.${type}`
 
                 cb(null, name)

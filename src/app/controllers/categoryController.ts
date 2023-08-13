@@ -2,7 +2,9 @@ import { Request, Response, Router } from 'express'
 import IController from './IController'
 import Category from '../../database/models/Category'
 import authorize from '../middlewares/authorize'
-import { Document } from 'mongoose'
+import Product from '../../database/models/Product'
+import { resolve } from 'path'
+import { existsSync, unlinkSync } from 'fs'
 
 class CategoryController implements IController {
     public router: Router = Router()
@@ -33,7 +35,7 @@ class CategoryController implements IController {
 
     async getCategories(req: Request, res: Response) {
         try {
-            const categories = Category.find()
+            const categories = await Category.find()
 
             res.send(categories)
         } catch (err) {
@@ -44,15 +46,38 @@ class CategoryController implements IController {
 
     async deleteCategoryById(req: Request, res: Response) {
         const id: string = req.body.id
+        const newCategoryId: string = req.body.newCategoryId
 
         try {
-            const del = await Category.deleteOne({ _id: id })
+            const category = await Category.findById(id)
 
-            if (del.deletedCount >= 1) {
-                return res.send({ response: "Category deleted" })
+            if (!category) {
+                return res.status(400).send({ error: "No category found" })
             }
 
-            res.send({ response: "no category deleted" })
+            await Category.findByIdAndDelete(id)
+
+            if (!newCategoryId) {
+                const products = await Product.find({ category: id })
+                const uploadPath = resolve('./src/database/uploads')
+
+                let deletedPictures = 0;
+                products.forEach((product) => {
+                    product.pictures.forEach((pic: string) => {
+                        if (existsSync(`${uploadPath}/${pic}`)) {
+                            unlinkSync(`${uploadPath}/${pic}`)
+                            deletedPictures++
+                        }
+                    })
+                })
+
+                const del = await Product.deleteMany({ category: id })
+
+                return res.send({ response: `Category, ${del.deletedCount} products and ${deletedPictures} pictures deleted` })
+            }
+
+            const updates = await Product.updateMany({ category: id }, { $set: { "category": newCategoryId } })
+            return res.send({ response: `Category deleted and ${updates.modifiedCount} products updeted to new category` })
         } catch (err) {
             console.log(err)
             res.status(400).send({ err })

@@ -55,6 +55,34 @@ class PicturesController implements IController {
             res.status(400).send({ err })
         }
     }
+
+    deleteManyImagesByName(req: Request, res: Response) {
+        const names: string[] = req.body.names
+        const uploadPath = resolve('./src/database/uploads')
+
+        try {
+            const responseMensages: string[] = []
+
+            names.forEach((fileName: string) => {
+                if (!existsSync(`${uploadPath}/${fileName}`)) {
+                    responseMensages.push(`Image ${fileName} not found`)
+                    return
+                }
+
+                unlinkSync(`${uploadPath}/${fileName}`)
+                return
+            })
+
+            if (responseMensages.length == 0) {
+                return res.send({ status: "All images deleted" })
+            }
+
+            return res.send({ status: "Gotta some errors", imagesErrors: responseMensages })
+        } catch (err) {
+            res.status(400).send({ err })
+        }
+
+    }
 }
 
 export default PicturesController

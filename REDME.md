@@ -4,25 +4,29 @@
 
 >**POST** - `/login`
 >
->Login do ADM
+>Login do ADM.
 
 ### Produtos
 
 >**GET** - ` /products`
 >
->Retorna todos os produtos
+>Retorna todos os produtos.
 
 >**GET** - ` /products/:categoryId`
 >
->Retorna todos os produtos por categoria
+>Retorna todos os produtos por categoria.
 
 >**GET** - ` /product/:id`
 >
->Retorna um produto especifico
+>Retorna um produto especifico.
 
 >**POST** - ` /product`
 >
->Adiciona um produto ao banco de dados. Requer autorização
+>Adiciona um produto ao banco de dados. Requer autorização.
+
+>**PATCH** - ` /product`
+>
+>Atualiza as informações de um produto. Requer autorização.
 
 >**DELETE** - ` /product`
 >
@@ -32,11 +36,11 @@
 
 >**GET** - ` /picture/:picName`
 >
->Retorna uma imagem com base no seu nome
+>Retorna uma imagem com base no seu nome.
 
 >**POST** - ` /picture`
 >
->Adiciona uma imagem ao arquivo da API. Requer autorização. Usa o multpart/formdata com o campo `file`
+>Adiciona uma imagem ao arquivo da API. Requer autorização. Usa o multpart/formdata com o campo `file`.
 
 >**DELETE** - ` /picture`
 >
@@ -52,6 +56,10 @@
 >
 >Adiciona uma categoria ao banco de dados. Requer autorização.
 
+>**PATCH** - ` /category`
+>
+>Atualiza as informações de uma categoria. Requer autorização.
+
 >**DELETE** - ` /category`
 >
->Remove uma categoria do banco de dados. Requer autorização. Apaga todos os produtos da categoria, ou os atualiza com o campo `newCategoryId` no JSON
+>Remove uma categoria do banco de dados. Requer autorização. Apaga todos os produtos da categoria, ou os atualiza com o campo `newCategoryId` no JSON.

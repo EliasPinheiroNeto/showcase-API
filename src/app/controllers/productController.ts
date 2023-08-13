@@ -15,6 +15,7 @@ class ProductController implements IController {
 
     public initializeRoutes() {
         this.router.get('/products', this.getProducts)
+        this.router.get('/products/:categoryId', this.getProductsByCategory)
         this.router.get('/product/:id', this.getProductById)
         this.router.post('/product', authorize, this.createProduct)
         this.router.delete('/product', authorize, this.deleteProductById)
@@ -54,6 +55,18 @@ class ProductController implements IController {
         } catch (err) {
             console.log(err)
             res.send({ err })
+        }
+    }
+
+    async getProductsByCategory(req: Request, res: Response) {
+        const categoryId = req.params.categoryId
+        try {
+            const products = await Product.find({ category: categoryId }).populate('category')
+
+            res.send(products)
+        } catch (err) {
+            console.log(err)
+            res.status(400).send(err)
         }
     }
 

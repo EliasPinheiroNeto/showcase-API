@@ -1,4 +1,5 @@
 import express from 'express';
+import cors from 'cors'
 import { Express } from 'express'
 import { connect } from 'mongoose'
 import IController from './controllers/IController';
@@ -18,6 +19,7 @@ class App {
 
     private initializeMiddlewares() {
         this.app.use(express.json())
+        this.app.use(cors())
     }
 
     private initializeControllers(controllers: IController[]) {
